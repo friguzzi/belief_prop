@@ -26,6 +26,7 @@
         <button type="button" id="button_delete_arc" class="btn btn-primary"><i class="glyphicon glyphicon-minus"></i>     Delete Arc</button>
         <button type="button" id="button_set_properties" class="btn btn-primary"><i class="glyphicon glyphicon-pencil"></i>      Set Properties</button>
         <button type="button" id="button_probability_table" class="btn btn-primary"><i class="glyphicon glyphicon-list-alt"></i>      Probability Table</button>
+        <button type="button" id="button_save" class="btn btn-primary"><i class="glyphicon glyphicon-file"></i>     Save</button>        
         <button type="button" id="button_query" class="btn btn-primary"><i class="glyphicon glyphicon-question-sign"></i>     Query</button>        
     </div>
     
@@ -158,6 +159,7 @@
             
             if(option_selected === "Set Properties")
             {
+                consoloe.log('here');
                 //grafica 
                 $("#error_dialog").hide();
                 $("#success").hide(); 
@@ -213,11 +215,13 @@
                 }
                 $("#success").show(); 
             }
+
         });
         
         //grafica messaggi di errore 
         $("#error_dialog").hide();
         $("#success").hide();
+
           
     //////////////////////////////////////////////////////////////////////////////////////////
         
@@ -244,8 +248,6 @@
         var count_id_nodes=0;
         var count_id_edges=0;
         help_flag=0;
-        
-        //voglio aggiungere un nuovo nodo
         $("#button_create_node").click(function() {
             //grafica 
             $("#error_dialog").hide();
@@ -260,7 +262,37 @@
             $("#help_message").hide();
             $("#div_create_nodes").show();
         });
+        //voglio aggiungere un nuovo nodo
+        $("#button_save").click(function() {
+                console.log('here');
+                bif = convertNetToBIF(data)
+                var textFile = new Blob([bif], {
+                type: 'text/plain'
+                });
+                invokeSaveAsDialog(textFile, 'TextFile.txt');
+            }        );
         
+        function convertNetToBIF(data){
+            var file='';
+            file=file+'<BIF VERSION="0.3">\n<NETWORK>\n';
+console.log(data.nodes);
+console.log (data.nodes.getIds());
+            for (i=1; i<=data.nodes.getIds().length;i++)
+            {
+                var n=data.nodes.get(i);
+                console.log(n);
+                file=file+'<VARIABLE TYPE="nature">\n';
+                file=file+'<NAME>'+n.label+'</NAME>\n';
+                var values=n.domain.split(",");
+                for (val in values)
+                {
+                    file=file+'<OUTCOME>'+val+'</OUTCOME>\n';
+                }
+                file=file+'</VARIABLE>\n\n';
+            }
+            console.log(file);
+            return file;
+        }
         //tipo di creazione scelta
         var auto_create = 0;
         //in ascii è la lettera A
@@ -1238,7 +1270,57 @@
         }
     });
     
-      
+      /**
+ * @param {Blob} file - File or Blob object. This parameter is required.
+ * @param {string} fileName - Optional file name e.g. "image.png"
+ */
+function invokeSaveAsDialog(file, fileName) {
+    if (!file) {
+        throw 'Blob object is required.';
+    }
+
+    if (!file.type) {
+        try {
+            file.type = 'video/webm';
+        } catch (e) {}
+    }
+
+    var fileExtension = (file.type || 'video/webm').split('/')[1];
+
+    if (fileName && fileName.indexOf('.') !== -1) {
+        var splitted = fileName.split('.');
+        fileName = splitted[0];
+        fileExtension = splitted[1];
+    }
+
+    var fileFullName = (fileName || (Math.round(Math.random() * 9999999999) + 888888888)) + '.' + fileExtension;
+
+    if (typeof navigator.msSaveOrOpenBlob !== 'undefined') {
+        return navigator.msSaveOrOpenBlob(file, fileFullName);
+    } else if (typeof navigator.msSaveBlob !== 'undefined') {
+        return navigator.msSaveBlob(file, fileFullName);
+    }
+
+    var hyperlink = document.createElement('a');
+    hyperlink.href = URL.createObjectURL(file);
+    hyperlink.download = fileFullName;
+
+    hyperlink.style = 'display:none;opacity:0;color:transparent;';
+    (document.body || document.documentElement).appendChild(hyperlink);
+
+    if (typeof hyperlink.click === 'function') {
+        hyperlink.click();
+    } else {
+        hyperlink.target = '_blank';
+        hyperlink.dispatchEvent(new MouseEvent('click', {
+            view: window,
+            bubbles: true,
+            cancelable: true
+        }));
+    }
+
+    (window.URL || window.webkitURL).revokeObjectURL(hyperlink.href);
+}
     </script>
 </body>
 </html>

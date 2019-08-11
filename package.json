@@ -9,14 +9,23 @@
   "author": "Alan Guerzi",
   "license": "MIT",
   "dependencies": {
-    "express": "^4.16.2",
+    "express": "^4.17.1",
     "file-system": "^2.2.2",
     "fs": "0.0.1-security",
     "jsonfile": "^4.0.0",
-    "vis": "^4.16.1"
+    "nodemon": "^1.19.1",
+    "vis": "^4.21.0"
   },
   "devDependencies": {
     "browserify": "^14.4.0"
   },
-  "description": "Demo"
+  "description": "Demo",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/darkangelcraft/BayesianNetwork.git"
+  },
+  "bugs": {
+    "url": "https://github.com/darkangelcraft/BayesianNetwork/issues"
+  },
+  "homepage": "https://github.com/darkangelcraft/BayesianNetwork#readme"
 }
